@@ -223,6 +223,13 @@ Created-By: lein-servlet\nBuilt-By: %s\nBuild-Jdk: %s"
                (catch ZipException e
                  (when-not (:web-xml webapp)
                    (throw e)))))
+        ;; optional war-resources-path files 
+        (let [^File war-resources (io/file (or (:war-resources-path webapp)
+                                                "war-resources"))]
+          (when (.exists war-resources)
+            (assert (.isDirectory war-resources))
+            (println "Copying files from" (.getAbsolutePath war-resources))
+            (jar-cp-r! war-out war-resources "")))
         ;; all 'WEB-INF/classes/*' files
         (doseq [^File each-dir (->> [(when-not (:omit-source project)
                                        :source-paths)
