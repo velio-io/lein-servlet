@@ -199,9 +199,10 @@ Created-By: lein-servlet\nBuilt-By: %s\nBuild-Jdk: %s"
   (lc/compile (merge-with concat project
                           {:dependencies '[[javax.servlet/servlet-api "2.5"]]}))
   (binding [*exclusion-patterns* exclusion-patterns]
-    (let [warpath (->> [:target-path :name :version]
-                       (map project)
-                       (apply format "%s/%s-%s.war"))
+    (let [{:keys [target-path name version]} project
+          war-name (or (:war-name webapp)
+                       (str name "-" version ".war"))
+          warpath (str target-path "/" war-name)
           as-vector #(cond (vector? %) %
                            (seq? %)    (into [] %)
                            (nil? %)    []
