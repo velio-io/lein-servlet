@@ -210,10 +210,10 @@ Created-By: lein-servlet\nBuilt-By: %s\nBuild-Jdk: %s"
       (with-open [war-out (new-jar-file warpath)]
         (assert (instance? JarOutputStream war-out))
         ;; all public files
-        (let [^File public (File. (:public webapp))]
-          (assert (.exists public))
-          (assert (.isDirectory public))
-          (jar-cp-r! war-out public "")) ;; add public files
+        (when-let [^File public (io/file (:public webapp))]
+          (when (.exists public)
+            (assert (.isDirectory public))
+            (jar-cp-r! war-out public ""))) ;; add public files
         ;; web.xml file
         (let [^File web-xml (io/file (or (:web-xml webapp)
                                          (make-temp-webxml webapp)))]
