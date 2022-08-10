@@ -214,7 +214,9 @@ Created-By: lein-servlet\nBuilt-By: %s\nBuild-Jdk: %s"
         (when-let [^File public (io/file (:public webapp))]
           (when (.exists public)
             (assert (.isDirectory public))
-            (jar-cp-r! war-out public ""))) ;; add public files
+            (if-let [public-root (:public-root webapp)]
+              (jar-cp-r! war-out public public-root)
+              (jar-cp-r! war-out public "")))) ;; add public files
         ;; web.xml file
         (let [^File web-xml (io/file (or (:web-xml webapp)
                                          (make-temp-webxml webapp)))]
